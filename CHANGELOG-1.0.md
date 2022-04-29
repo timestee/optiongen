@@ -1,4 +1,12 @@
-### v1.0.7 🌈 (2022-04-28 19:03:21)
+### v1.0.8 🌈 (2022-04-29 17:43:14)
+
+#### 🐛  Bug Fixed
+  * spell check ([ab39bad](https://github.com/sandwich-go/optiongen/commit/ab39bade745708733f699866497543c2e54a7553)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-29 17:43:14 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([40e61ca](https://github.com/sandwich-go/optiongen/commit/40e61ca5bb364a87328922ae41eb0d140013fe34)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-28 19:04:21 &#43;0800 &#43;0800</small>)
+
+### v1.0.7 (2022-04-28 19:03:21)
 
 #### 🤖  Tools
   * **sem**: make changelog ([019a949](https://github.com/sandwich-go/optiongen/commit/019a9498ddb5b9340196dbada39b9cb03aa23b65)) (<small>[hui.wang](hui.wang@funplus.com)@2022-03-25 10:10:03 &#43;0800 &#43;0800</small>)
