@@ -1,4 +1,28 @@
-### v1.0.7 🌈 (2022-04-28 19:03:21)
+### v1.0.9 🌈 (2024-06-26 11:56:26)
+
+#### 🚀  New Feature
+  * support option interface ([12e34cf](https://github.com/sandwich-go/optiongen/commit/12e34cf371b3720be76ba6634c47770c8c79f83a) , [68e1a19](https://github.com/sandwich-go/optiongen/commit/68e1a19e414fe3bd0753d99c2becb90c652b7a92)) (<small>[hui.wang](hui.wang@centurygame.com)@2024-06-26 11:56:26 &#43;0800 &#43;0800</small>)
+  * 数组类型增加 AppendXXXX 函数，[#10](https://github.com/sandwich-go/10/issues/%!s(MISSING)) ([82a4b47](https://github.com/sandwich-go/optiongen/commit/82a4b4753b8dd76478a64fff19ace60a7d090ac2) , [f0cb148](https://github.com/sandwich-go/optiongen/commit/f0cb1487b5d033924d900a09de6220f7880bb460) , [29a83f0](https://github.com/sandwich-go/optiongen/commit/29a83f0441af616e32321f5cd5a8195bf8ec07d3)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2024-02-22 12:14:15 &#43;0800 &#43;0800</small>)
+  * add set default value function ([a291e60](https://github.com/sandwich-go/optiongen/commit/a291e60086baca320b6cde7f9f5696b705b05957)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2024-01-26 13:10:11 &#43;0800 &#43;0800</small>)
+
+#### 💪  Commit
+  * Merge pull request [#15](https://github.com/sandwich-go/15/issues/%!s(MISSING)) from zhuzhengyang/patch-1 ([765ae26](https://github.com/sandwich-go/optiongen/commit/765ae26cabe63090c611cccbabaf1499af327336)) (<small>[timestee](19310233&#43;timestee@users.noreply.github.com)@2024-04-15 18:42:27 &#43;0800 &#43;0800</small>)
+  * Update README.md ([43f7fd1](https://github.com/sandwich-go/optiongen/commit/43f7fd1667465ad460ef20c7e231f37318594f6d)) (<small>[Zhu Zhengyang](buptzhuzhengyang@foxmail.com)@2024-04-07 16:56:41 &#43;0800 &#43;0800</small>)
+  * Merge pull request [#14](https://github.com/sandwich-go/14/issues/%!s(MISSING)) from lenonqing/master ([6c23d3d](https://github.com/sandwich-go/optiongen/commit/6c23d3dd62b4fc08beb49eaf33dd55706f4d833f)) (<small>[timestee](19310233&#43;timestee@users.noreply.github.com)@2024-02-26 14:10:03 &#43;0800 &#43;0800</small>)
+  * feat([#13](https://github.com/sandwich-go/13/issues/%!s(MISSING))): 增加 slice_only_append 参数，控制切片类型是否只有 append 方法 ([73b6a20](https://github.com/sandwich-go/optiongen/commit/73b6a20ddbd86236a48f2b7c961605a34a3269db)) (<small>[huangqing.zhu](huangqing.zhu@centurygame.com)@2024-02-26 14:08:24 &#43;0800 &#43;0800</small>)
+  * Merge pull request [#12](https://github.com/sandwich-go/12/issues/%!s(MISSING)) from lenonqing/master ([55d1379](https://github.com/sandwich-go/optiongen/commit/55d13796da0406f6f6ebaa8a91ac12f6fbd08aca)) (<small>[timestee](19310233&#43;timestee@users.noreply.github.com)@2024-02-22 12:16:47 &#43;0800 &#43;0800</small>)
+  * Merge pull request [#11](https://github.com/sandwich-go/11/issues/%!s(MISSING)) from lenonqing/master ([edb6561](https://github.com/sandwich-go/optiongen/commit/edb656180b1709e2f5c23ef34a7cc378685e8e6a)) (<small>[timestee](19310233&#43;timestee@users.noreply.github.com)@2024-02-22 12:05:52 &#43;0800 &#43;0800</small>)
+  * Merge pull request [#9](https://github.com/sandwich-go/9/issues/%!s(MISSING)) from lenonqing/master ([a73f669](https://github.com/sandwich-go/optiongen/commit/a73f6696893c1d45a547c17a76cde833edecd14a)) (<small>[timestee](19310233&#43;timestee@users.noreply.github.com)@2024-01-29 18:44:42 &#43;0800 &#43;0800</small>)
+
+### v1.0.8 (2022-04-29 17:43:14)
+
+#### 🐛  Bug Fixed
+  * spell check ([ab39bad](https://github.com/sandwich-go/optiongen/commit/ab39bade745708733f699866497543c2e54a7553)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-29 17:43:14 &#43;0800 &#43;0800</small>)
+
+#### 🤖  Tools
+  * **sem**: make changelog ([40e61ca](https://github.com/sandwich-go/optiongen/commit/40e61ca5bb364a87328922ae41eb0d140013fe34)) (<small>[hui.wang](hui.wang@funplus.com)@2022-04-28 19:04:21 &#43;0800 &#43;0800</small>)
+
+### v1.0.7 (2022-04-28 19:03:21)
 
 #### 🤖  Tools
   * **sem**: make changelog ([019a949](https://github.com/sandwich-go/optiongen/commit/019a9498ddb5b9340196dbada39b9cb03aa23b65)) (<small>[hui.wang](hui.wang@funplus.com)@2022-03-25 10:10:03 &#43;0800 &#43;0800</small>)
