@@ -12,7 +12,7 @@ type OnlyAppend struct {
 func NewOnlyAppend(opts ...OnlyAppendOption) *OnlyAppend {
 	cc := newDefaultOnlyAppend()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogOnlyAppend != nil {
 		watchDogOnlyAppend(cc)
@@ -27,20 +27,39 @@ func NewOnlyAppend(opts ...OnlyAppendOption) *OnlyAppend {
 func (cc *OnlyAppend) ApplyOption(opts ...OnlyAppendOption) []OnlyAppendOption {
 	var previous []OnlyAppendOption
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// OnlyAppendOption option func
-type OnlyAppendOption func(cc *OnlyAppend) OnlyAppendOption
+// OnlyAppendOptionFunc option func
+type OnlyAppendOption interface {
+	Apply(cc *OnlyAppend) OnlyAppendOption
+}
+
+var _ OnlyAppendOption = OnlyAppendOptionFunc(nil)
+
+type OnlyAppendOptionFunc func(cc *OnlyAppend) OnlyAppendOptionFunc
+
+func (f OnlyAppendOptionFunc) Apply(cc *OnlyAppend) OnlyAppendOption {
+	return f(cc)
+}
+
+// WithAddress option func for filed Address
+func WithAddress(v ...string) OnlyAppendOptionFunc {
+	return func(cc *OnlyAppend) OnlyAppendOptionFunc {
+		previous := cc.Address
+		cc.Address = v
+		return WithAddress(previous...)
+	}
+}
 
 // AppendAddress append func for filed Address
-func AppendAddress(v ...string) OnlyAppendOption {
-	return func(cc *OnlyAppend) OnlyAppendOption {
+func AppendAddress(v ...string) OnlyAppendOptionFunc {
+	return func(cc *OnlyAppend) OnlyAppendOptionFunc {
 		previous := cc.Address
 		cc.Address = append(cc.Address, v...)
-		return AppendAddress(previous...)
+		return WithAddress(previous...)
 	}
 }
 
@@ -52,8 +71,8 @@ var watchDogOnlyAppend func(cc *OnlyAppend)
 
 // setOnlyAppendDefaultValue default OnlyAppend value
 func setOnlyAppendDefaultValue(cc *OnlyAppend) {
-	for _, opt := range [...]OnlyAppendOption{
-		AppendAddress([]string{"10.0.0.1:6379", "10.0.0.2:6379"}...),
+	for _, opt := range [...]OnlyAppendOptionFunc{
+		WithAddress([]string{"10.0.0.1:6379", "10.0.0.2:6379"}...),
 	} {
 		opt(cc)
 	}

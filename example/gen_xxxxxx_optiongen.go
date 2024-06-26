@@ -29,7 +29,7 @@ type XXXXXX struct {
 func NewXXXXXX(opts ...XXXXXXOption) *XXXXXX {
 	cc := newDefaultXXXXXX()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogXXXXXX != nil {
 		watchDogXXXXXX(cc)
@@ -44,17 +44,27 @@ func NewXXXXXX(opts ...XXXXXXOption) *XXXXXX {
 func (cc *XXXXXX) ApplyOption(opts ...XXXXXXOption) []XXXXXXOption {
 	var previous []XXXXXXOption
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// XXXXXXOption option func
-type XXXXXXOption func(cc *XXXXXX) XXXXXXOption
+// XXXXXXOptionFunc option func
+type XXXXXXOption interface {
+	Apply(cc *XXXXXX) XXXXXXOption
+}
+
+var _ XXXXXXOption = XXXXXXOptionFunc(nil)
+
+type XXXXXXOptionFunc func(cc *XXXXXX) XXXXXXOptionFunc
+
+func (f XXXXXXOptionFunc) Apply(cc *XXXXXX) XXXXXXOption {
+	return f(cc)
+}
 
 // WithXXXXXXOptionUsage option func for filed OptionUsage
-func WithXXXXXXOptionUsage(v string) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXOptionUsage(v string) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.OptionUsage
 		cc.OptionUsage = v
 		return WithXXXXXXOptionUsage(previous)
@@ -62,8 +72,8 @@ func WithXXXXXXOptionUsage(v string) XXXXXXOption {
 }
 
 // WithXXXXXXEndpoints option func for filed Endpoints
-func WithXXXXXXEndpoints(v ...string) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXEndpoints(v ...string) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.Endpoints
 		cc.Endpoints = v
 		return WithXXXXXXEndpoints(previous...)
@@ -71,8 +81,8 @@ func WithXXXXXXEndpoints(v ...string) XXXXXXOption {
 }
 
 // AppendXXXXXXEndpoints append func for filed Endpoints
-func AppendXXXXXXEndpoints(v ...string) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func AppendXXXXXXEndpoints(v ...string) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.Endpoints
 		cc.Endpoints = append(cc.Endpoints, v...)
 		return WithXXXXXXEndpoints(previous...)
@@ -80,8 +90,8 @@ func AppendXXXXXXEndpoints(v ...string) XXXXXXOption {
 }
 
 // WithXXXXXXReadTimeout option func for filed ReadTimeout
-func WithXXXXXXReadTimeout(v time.Duration) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXReadTimeout(v time.Duration) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.ReadTimeout
 		cc.ReadTimeout = v
 		return WithXXXXXXReadTimeout(previous)
@@ -89,8 +99,8 @@ func WithXXXXXXReadTimeout(v time.Duration) XXXXXXOption {
 }
 
 // WithXXXXXXTypeMapIntString option func for filed TypeMapIntString
-func WithXXXXXXTypeMapIntString(v map[int]string) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXTypeMapIntString(v map[int]string) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.TypeMapIntString
 		cc.TypeMapIntString = v
 		return WithXXXXXXTypeMapIntString(previous)
@@ -98,8 +108,8 @@ func WithXXXXXXTypeMapIntString(v map[int]string) XXXXXXOption {
 }
 
 // WithXXXXXXTypeSliceInt64 option func for filed TypeSliceInt64
-func WithXXXXXXTypeSliceInt64(v ...int64) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXTypeSliceInt64(v ...int64) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.TypeSliceInt64
 		cc.TypeSliceInt64 = v
 		return WithXXXXXXTypeSliceInt64(previous...)
@@ -107,8 +117,8 @@ func WithXXXXXXTypeSliceInt64(v ...int64) XXXXXXOption {
 }
 
 // AppendXXXXXXTypeSliceInt64 append func for filed TypeSliceInt64
-func AppendXXXXXXTypeSliceInt64(v ...int64) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func AppendXXXXXXTypeSliceInt64(v ...int64) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.TypeSliceInt64
 		cc.TypeSliceInt64 = append(cc.TypeSliceInt64, v...)
 		return WithXXXXXXTypeSliceInt64(previous...)
@@ -116,8 +126,8 @@ func AppendXXXXXXTypeSliceInt64(v ...int64) XXXXXXOption {
 }
 
 // WithXXXXXXTypeBool option func for filed TypeBool
-func WithXXXXXXTypeBool(v bool) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXTypeBool(v bool) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.TypeBool
 		cc.TypeBool = v
 		return WithXXXXXXTypeBool(previous)
@@ -125,8 +135,8 @@ func WithXXXXXXTypeBool(v bool) XXXXXXOption {
 }
 
 // WithXXXXXXMapRedis option func for filed MapRedis
-func WithXXXXXXMapRedis(v map[string]*Redis) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXMapRedis(v map[string]*Redis) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.MapRedis
 		cc.MapRedis = v
 		return WithXXXXXXMapRedis(previous)
@@ -136,8 +146,8 @@ func WithXXXXXXMapRedis(v map[string]*Redis) XXXXXXOption {
 // WithXXXXXXRedis option func for filed Redis
 //
 // Deprecated: use MapRedis intead
-func WithXXXXXXRedis(v *Redis) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXRedis(v *Redis) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.Redis
 		cc.Redis = v
 		return WithXXXXXXRedis(previous)
@@ -145,8 +155,8 @@ func WithXXXXXXRedis(v *Redis) XXXXXXOption {
 }
 
 // WithXXXXXXOnWatchError option func for filed OnWatchError
-func WithXXXXXXOnWatchError(v WatchError) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXOnWatchError(v WatchError) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.OnWatchError
 		cc.OnWatchError = v
 		return WithXXXXXXOnWatchError(previous)
@@ -154,8 +164,8 @@ func WithXXXXXXOnWatchError(v WatchError) XXXXXXOption {
 }
 
 // WithXXXXXXOnWatchErrorNotNil option func for filed OnWatchErrorNotNil
-func WithXXXXXXOnWatchErrorNotNil(v func(loaderName string, confPath string, watchErr error)) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXOnWatchErrorNotNil(v func(loaderName string, confPath string, watchErr error)) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.OnWatchErrorNotNil
 		cc.OnWatchErrorNotNil = v
 		return WithXXXXXXOnWatchErrorNotNil(previous)
@@ -163,8 +173,8 @@ func WithXXXXXXOnWatchErrorNotNil(v func(loaderName string, confPath string, wat
 }
 
 // WithXXXXXXTypeSliceDuratuon option func for filed TypeSliceDuratuon
-func WithXXXXXXTypeSliceDuratuon(v ...time.Duration) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func WithXXXXXXTypeSliceDuratuon(v ...time.Duration) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.TypeSliceDuratuon
 		cc.TypeSliceDuratuon = v
 		return WithXXXXXXTypeSliceDuratuon(previous...)
@@ -172,8 +182,8 @@ func WithXXXXXXTypeSliceDuratuon(v ...time.Duration) XXXXXXOption {
 }
 
 // AppendXXXXXXTypeSliceDuratuon append func for filed TypeSliceDuratuon
-func AppendXXXXXXTypeSliceDuratuon(v ...time.Duration) XXXXXXOption {
-	return func(cc *XXXXXX) XXXXXXOption {
+func AppendXXXXXXTypeSliceDuratuon(v ...time.Duration) XXXXXXOptionFunc {
+	return func(cc *XXXXXX) XXXXXXOptionFunc {
 		previous := cc.TypeSliceDuratuon
 		cc.TypeSliceDuratuon = append(cc.TypeSliceDuratuon, v...)
 		return WithXXXXXXTypeSliceDuratuon(previous...)
@@ -188,7 +198,7 @@ var watchDogXXXXXX func(cc *XXXXXX)
 
 // setXXXXXXDefaultValue default XXXXXX value
 func setXXXXXXDefaultValue(cc *XXXXXX) {
-	for _, opt := range [...]XXXXXXOption{
+	for _, opt := range [...]XXXXXXOptionFunc{
 		WithXXXXXXOptionUsage(optionUsage),
 		WithXXXXXXEndpoints([]string{"10.0.0.1", "10.0.0.2"}...),
 		WithXXXXXXReadTimeout(time.Second),

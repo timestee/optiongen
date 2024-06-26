@@ -10,11 +10,12 @@ import (
 	"sort"
 	"strings"
 
+	"myitcv.io/gogenerate"
+
 	"github.com/sandwich-go/boost/annotation"
 	"github.com/sandwich-go/boost/xmap"
 	"github.com/sandwich-go/boost/xstrings"
 	"github.com/sandwich-go/boost/xtag"
-	"myitcv.io/gogenerate"
 )
 
 type FieldType int
@@ -83,15 +84,16 @@ type optionField struct {
 }
 
 type templateData struct {
-	ClassOptionInfo       []optionInfo
-	ClassComments         []string
-	ClassName             string
-	ClassNameTitle        string
-	ClassOptionTypeName   string
-	ClassNewFuncSignature string
-	ClassNewFuncName      string
-	XConf                 bool
-	OptionReturnPrevious  bool
+	ClassOptionInfo             []optionInfo
+	ClassComments               []string
+	ClassName                   string
+	ClassNameTitle              string
+	ClassOptionTypeName         string
+	ClassOptionFunctionTypeName string
+	ClassNewFuncSignature       string
+	ClassNewFuncName            string
+	XConf                       bool
+	OptionReturnPrevious        bool
 
 	VisitorName   string
 	InterfaceName string
@@ -306,6 +308,7 @@ func (g fileOptionGen) gen() {
 	}
 	optionTypeName = strings.Title(optionTypeName)
 	tmp.ClassOptionTypeName = optionTypeName
+	tmp.ClassOptionFunctionTypeName = fmt.Sprintf("%sFunc", optionTypeName)
 	tmp.ClassComments = g.Comments
 	tmp.ClassName = g.ClassName
 	tmp.ClassNameTitle = strings.Title(tmp.ClassName)

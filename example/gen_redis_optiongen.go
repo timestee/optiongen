@@ -21,7 +21,7 @@ type Redis struct {
 func NewRedis(opts ...RedisOption) *Redis {
 	cc := newDefaultRedis()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogRedis != nil {
 		watchDogRedis(cc)
@@ -36,17 +36,27 @@ func NewRedis(opts ...RedisOption) *Redis {
 func (cc *Redis) ApplyOption(opts ...RedisOption) []RedisOption {
 	var previous []RedisOption
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// RedisOption option func
-type RedisOption func(cc *Redis) RedisOption
+// RedisOptionFunc option func
+type RedisOption interface {
+	Apply(cc *Redis) RedisOption
+}
+
+var _ RedisOption = RedisOptionFunc(nil)
+
+type RedisOptionFunc func(cc *Redis) RedisOptionFunc
+
+func (f RedisOptionFunc) Apply(cc *Redis) RedisOption {
+	return f(cc)
+}
 
 // WithRedisEndpoints option func for filed Endpoints
-func WithRedisEndpoints(v ...string) RedisOption {
-	return func(cc *Redis) RedisOption {
+func WithRedisEndpoints(v ...string) RedisOptionFunc {
+	return func(cc *Redis) RedisOptionFunc {
 		previous := cc.Endpoints
 		cc.Endpoints = v
 		return WithRedisEndpoints(previous...)
@@ -54,8 +64,8 @@ func WithRedisEndpoints(v ...string) RedisOption {
 }
 
 // AppendRedisEndpoints append func for filed Endpoints
-func AppendRedisEndpoints(v ...string) RedisOption {
-	return func(cc *Redis) RedisOption {
+func AppendRedisEndpoints(v ...string) RedisOptionFunc {
+	return func(cc *Redis) RedisOptionFunc {
 		previous := cc.Endpoints
 		cc.Endpoints = append(cc.Endpoints, v...)
 		return WithRedisEndpoints(previous...)
@@ -63,8 +73,8 @@ func AppendRedisEndpoints(v ...string) RedisOption {
 }
 
 // AppendRedisAddress append func for filed Address
-func AppendRedisAddress(v ...string) RedisOption {
-	return func(cc *Redis) RedisOption {
+func AppendRedisAddress(v ...string) RedisOptionFunc {
+	return func(cc *Redis) RedisOptionFunc {
 		previous := cc.Address
 		cc.Address = append(cc.Address, v...)
 		return AppendRedisAddress(previous...)
@@ -72,8 +82,8 @@ func AppendRedisAddress(v ...string) RedisOption {
 }
 
 // WithRedisCluster option func for filed Cluster
-func WithRedisCluster(v bool) RedisOption {
-	return func(cc *Redis) RedisOption {
+func WithRedisCluster(v bool) RedisOptionFunc {
+	return func(cc *Redis) RedisOptionFunc {
 		previous := cc.Cluster
 		cc.Cluster = v
 		return WithRedisCluster(previous)
@@ -81,8 +91,8 @@ func WithRedisCluster(v bool) RedisOption {
 }
 
 // WithRedisTimeoutsStruct option func for filed TimeoutsStruct
-func WithRedisTimeoutsStruct(v Timeouts) RedisOption {
-	return func(cc *Redis) RedisOption {
+func WithRedisTimeoutsStruct(v Timeouts) RedisOptionFunc {
+	return func(cc *Redis) RedisOptionFunc {
 		previous := cc.TimeoutsStruct
 		cc.TimeoutsStruct = v
 		return WithRedisTimeoutsStruct(previous)
@@ -97,7 +107,7 @@ var watchDogRedis func(cc *Redis)
 
 // setRedisDefaultValue default Redis value
 func setRedisDefaultValue(cc *Redis) {
-	for _, opt := range [...]RedisOption{
+	for _, opt := range [...]RedisOptionFunc{
 		WithRedisEndpoints([]string{"192.168.0.1", "192.168.0.2"}...),
 		AppendRedisAddress([]string{"10.0.0.1:6379", "10.0.0.2:6379"}...),
 		WithRedisCluster(true),

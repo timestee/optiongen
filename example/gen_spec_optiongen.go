@@ -29,7 +29,7 @@ type spec struct {
 func NewSpec(opts ...SpecOption) *spec {
 	cc := newDefaultSpec()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogSpec != nil {
 		watchDogSpec(cc)
@@ -40,36 +40,46 @@ func NewSpec(opts ...SpecOption) *spec {
 // ApplyOption apply multiple new option
 func (cc *spec) ApplyOption(opts ...SpecOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// SpecOption option func
-type SpecOption func(cc *spec)
+// SpecOptionFunc option func
+type SpecOption interface {
+	Apply(cc *spec)
+}
+
+var _ SpecOption = SpecOptionFunc(nil)
+
+type SpecOptionFunc func(cc *spec)
+
+func (f SpecOptionFunc) Apply(cc *spec) {
+	f(cc)
+}
 
 // WithServerTestBool1 option func for filed TestBool1
-func WithServerTestBool1(v bool) SpecOption {
+func WithServerTestBool1(v bool) SpecOptionFunc {
 	return func(cc *spec) {
 		cc.TestBool1 = v
 	}
 }
 
 // WithServerTestInt1 这里是函数注释3,这里是函数注释4
-func WithServerTestInt1(v int) SpecOption {
+func WithServerTestInt1(v int) SpecOptionFunc {
 	return func(cc *spec) {
 		cc.TestInt1 = v
 	}
 }
 
 // WithServerTestNilFunc1 option func for filed TestNilFunc1
-func WithServerTestNilFunc1(v func()) SpecOption {
+func WithServerTestNilFunc1(v func()) SpecOptionFunc {
 	return func(cc *spec) {
 		cc.TestNilFunc1 = v
 	}
 }
 
 // WithServerTestReserved2Inner1 option func for filed TestReserved2Inner1
-func WithServerTestReserved2Inner1(v int) SpecOption {
+func WithServerTestReserved2Inner1(v int) SpecOptionFunc {
 	return func(cc *spec) {
 		cc.TestReserved2Inner1 = v
 	}
@@ -85,7 +95,7 @@ var watchDogSpec func(cc *spec)
 func setSpecDefaultValue(cc *spec) {
 	cc.TestNil1 = nil
 	cc.TestReserved2_ = nil
-	for _, opt := range [...]SpecOption{
+	for _, opt := range [...]SpecOptionFunc{
 		WithServerTestBool1(false),
 		WithServerTestInt1(32),
 		WithServerTestNilFunc1(nil),

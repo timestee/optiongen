@@ -89,7 +89,7 @@ func specOptionDeclareWithDefault() interface{} {
 	}
 }
 
-//go:generate optiongen --option_return_previous=true --slice_only_append=true
+//go:generate optiongen --option_return_previous=true
 func OnlyAppendOptionDeclareWithDefault() interface{} {
 	return map[string]interface{}{
 		"Address": []string{"10.0.0.1:6379", "10.0.0.2:6379"},

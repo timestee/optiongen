@@ -22,7 +22,7 @@ func NewETCD(writeTimeout time.Duration, opts ...ETCDOption) *ETCD {
 	cc := newDefaultETCD()
 	cc.writeTimeout = writeTimeout
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogETCD != nil {
 		watchDogETCD(cc)
@@ -33,36 +33,46 @@ func NewETCD(writeTimeout time.Duration, opts ...ETCDOption) *ETCD {
 // ApplyOption apply multiple new option
 func (cc *ETCD) ApplyOption(opts ...ETCDOption) {
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 }
 
-// ETCDOption option func
-type ETCDOption func(cc *ETCD)
+// ETCDOptionFunc option func
+type ETCDOption interface {
+	Apply(cc *ETCD)
+}
+
+var _ ETCDOption = ETCDOptionFunc(nil)
+
+type ETCDOptionFunc func(cc *ETCD)
+
+func (f ETCDOptionFunc) Apply(cc *ETCD) {
+	f(cc)
+}
 
 // WithETCDEndpoints etcd地址
-func WithETCDEndpoints(v ...string) ETCDOption {
+func WithETCDEndpoints(v ...string) ETCDOptionFunc {
 	return func(cc *ETCD) {
 		cc.Endpoints = v
 	}
 }
 
 // AppendETCDEndpoints etcd地址
-func AppendETCDEndpoints(v ...string) ETCDOption {
+func AppendETCDEndpoints(v ...string) ETCDOptionFunc {
 	return func(cc *ETCD) {
 		cc.Endpoints = append(cc.Endpoints, v...)
 	}
 }
 
 // WithETCDTimeoutsPointer timeout设置
-func WithETCDTimeoutsPointer(v *Timeouts) ETCDOption {
+func WithETCDTimeoutsPointer(v *Timeouts) ETCDOptionFunc {
 	return func(cc *ETCD) {
 		cc.TimeoutsPointer = v
 	}
 }
 
 // WithETCDRedis option func for filed Redis
-func WithETCDRedis(v *Redis) ETCDOption {
+func WithETCDRedis(v *Redis) ETCDOptionFunc {
 	return func(cc *ETCD) {
 		cc.Redis = v
 	}
@@ -77,7 +87,7 @@ var watchDogETCD func(cc *ETCD)
 // setETCDDefaultValue default ETCD value
 func setETCDDefaultValue(cc *ETCD) {
 	cc.writeTimeout = time.Second
-	for _, opt := range [...]ETCDOption{
+	for _, opt := range [...]ETCDOptionFunc{
 		WithETCDEndpoints([]string{"10.0.0.1", "10.0.0.2"}...),
 		WithETCDTimeoutsPointer(&Timeouts{}),
 		WithETCDRedis(NewRedis()),

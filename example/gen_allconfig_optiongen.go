@@ -57,7 +57,7 @@ type AllConfig struct {
 func NewAllConfig(opts ...AllConfigOption) *AllConfig {
 	cc := newDefaultAllConfig()
 	for _, opt := range opts {
-		opt(cc)
+		opt.Apply(cc)
 	}
 	if watchDogAllConfig != nil {
 		watchDogAllConfig(cc)
@@ -72,17 +72,27 @@ func NewAllConfig(opts ...AllConfigOption) *AllConfig {
 func (cc *AllConfig) ApplyOption(opts ...AllConfigOption) []AllConfigOption {
 	var previous []AllConfigOption
 	for _, opt := range opts {
-		previous = append(previous, opt(cc))
+		previous = append(previous, opt.Apply(cc))
 	}
 	return previous
 }
 
-// AllConfigOption option func
-type AllConfigOption func(cc *AllConfig) AllConfigOption
+// AllConfigOptionFunc option func
+type AllConfigOption interface {
+	Apply(cc *AllConfig) AllConfigOption
+}
+
+var _ AllConfigOption = AllConfigOptionFunc(nil)
+
+type AllConfigOptionFunc func(cc *AllConfig) AllConfigOptionFunc
+
+func (f AllConfigOptionFunc) Apply(cc *AllConfig) AllConfigOption {
+	return f(cc)
+}
 
 // WithTypeBool option func for filed TypeBool
-func WithTypeBool(v bool) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeBool(v bool) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeBool
 		cc.TypeBool = v
 		return WithTypeBool(previous)
@@ -90,8 +100,8 @@ func WithTypeBool(v bool) AllConfigOption {
 }
 
 // WithTypeString option func for filed TypeString
-func WithTypeString(v string) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeString(v string) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeString
 		cc.TypeString = v
 		return WithTypeString(previous)
@@ -99,8 +109,8 @@ func WithTypeString(v string) AllConfigOption {
 }
 
 // WithTypeDuration option func for filed TypeDuration
-func WithTypeDuration(v time.Duration) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeDuration(v time.Duration) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeDuration
 		cc.TypeDuration = v
 		return WithTypeDuration(previous)
@@ -108,8 +118,8 @@ func WithTypeDuration(v time.Duration) AllConfigOption {
 }
 
 // WithTypeFloat32 option func for filed TypeFloat32
-func WithTypeFloat32(v float32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeFloat32(v float32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeFloat32
 		cc.TypeFloat32 = v
 		return WithTypeFloat32(previous)
@@ -117,8 +127,8 @@ func WithTypeFloat32(v float32) AllConfigOption {
 }
 
 // WithTypeFloat64 option func for filed TypeFloat64
-func WithTypeFloat64(v float32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeFloat64(v float32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeFloat64
 		cc.TypeFloat64 = v
 		return WithTypeFloat64(previous)
@@ -126,8 +136,8 @@ func WithTypeFloat64(v float32) AllConfigOption {
 }
 
 // WithTypeInt option func for filed TypeInt
-func WithTypeInt(v int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeInt(v int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeInt
 		cc.TypeInt = v
 		return WithTypeInt(previous)
@@ -135,8 +145,8 @@ func WithTypeInt(v int) AllConfigOption {
 }
 
 // WithTypeUint option func for filed TypeUint
-func WithTypeUint(v int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeUint(v int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeUint
 		cc.TypeUint = v
 		return WithTypeUint(previous)
@@ -144,8 +154,8 @@ func WithTypeUint(v int) AllConfigOption {
 }
 
 // WithTypeInt8 option func for filed TypeInt8
-func WithTypeInt8(v int8) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeInt8(v int8) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeInt8
 		cc.TypeInt8 = v
 		return WithTypeInt8(previous)
@@ -153,8 +163,8 @@ func WithTypeInt8(v int8) AllConfigOption {
 }
 
 // WithTypeUint8 option func for filed TypeUint8
-func WithTypeUint8(v uint8) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeUint8(v uint8) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeUint8
 		cc.TypeUint8 = v
 		return WithTypeUint8(previous)
@@ -162,8 +172,8 @@ func WithTypeUint8(v uint8) AllConfigOption {
 }
 
 // WithTypeInt16 option func for filed TypeInt16
-func WithTypeInt16(v int16) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeInt16(v int16) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeInt16
 		cc.TypeInt16 = v
 		return WithTypeInt16(previous)
@@ -171,8 +181,8 @@ func WithTypeInt16(v int16) AllConfigOption {
 }
 
 // WithTypeUint16 option func for filed TypeUint16
-func WithTypeUint16(v uint16) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeUint16(v uint16) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeUint16
 		cc.TypeUint16 = v
 		return WithTypeUint16(previous)
@@ -180,8 +190,8 @@ func WithTypeUint16(v uint16) AllConfigOption {
 }
 
 // WithTypeInt32 option func for filed TypeInt32
-func WithTypeInt32(v int32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeInt32(v int32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeInt32
 		cc.TypeInt32 = v
 		return WithTypeInt32(previous)
@@ -189,8 +199,8 @@ func WithTypeInt32(v int32) AllConfigOption {
 }
 
 // WithTypeUint32 option func for filed TypeUint32
-func WithTypeUint32(v uint32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeUint32(v uint32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeUint32
 		cc.TypeUint32 = v
 		return WithTypeUint32(previous)
@@ -198,8 +208,8 @@ func WithTypeUint32(v uint32) AllConfigOption {
 }
 
 // WithTypeInt64 option func for filed TypeInt64
-func WithTypeInt64(v int64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeInt64(v int64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeInt64
 		cc.TypeInt64 = v
 		return WithTypeInt64(previous)
@@ -207,8 +217,8 @@ func WithTypeInt64(v int64) AllConfigOption {
 }
 
 // WithTypeUint64 option func for filed TypeUint64
-func WithTypeUint64(v uint64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeUint64(v uint64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeUint64
 		cc.TypeUint64 = v
 		return WithTypeUint64(previous)
@@ -216,8 +226,8 @@ func WithTypeUint64(v uint64) AllConfigOption {
 }
 
 // WithTypeSliceInt option func for filed TypeSliceInt
-func WithTypeSliceInt(v ...int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceInt(v ...int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt
 		cc.TypeSliceInt = v
 		return WithTypeSliceInt(previous...)
@@ -225,8 +235,8 @@ func WithTypeSliceInt(v ...int) AllConfigOption {
 }
 
 // AppendTypeSliceInt append func for filed TypeSliceInt
-func AppendTypeSliceInt(v ...int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceInt(v ...int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt
 		cc.TypeSliceInt = append(cc.TypeSliceInt, v...)
 		return WithTypeSliceInt(previous...)
@@ -234,8 +244,8 @@ func AppendTypeSliceInt(v ...int) AllConfigOption {
 }
 
 // WithTypeSliceUint option func for filed TypeSliceUint
-func WithTypeSliceUint(v ...uint) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceUint(v ...uint) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint
 		cc.TypeSliceUint = v
 		return WithTypeSliceUint(previous...)
@@ -243,8 +253,8 @@ func WithTypeSliceUint(v ...uint) AllConfigOption {
 }
 
 // AppendTypeSliceUint append func for filed TypeSliceUint
-func AppendTypeSliceUint(v ...uint) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceUint(v ...uint) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint
 		cc.TypeSliceUint = append(cc.TypeSliceUint, v...)
 		return WithTypeSliceUint(previous...)
@@ -252,8 +262,8 @@ func AppendTypeSliceUint(v ...uint) AllConfigOption {
 }
 
 // WithTypeSliceInt8 option func for filed TypeSliceInt8
-func WithTypeSliceInt8(v ...int8) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceInt8(v ...int8) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt8
 		cc.TypeSliceInt8 = v
 		return WithTypeSliceInt8(previous...)
@@ -261,8 +271,8 @@ func WithTypeSliceInt8(v ...int8) AllConfigOption {
 }
 
 // AppendTypeSliceInt8 append func for filed TypeSliceInt8
-func AppendTypeSliceInt8(v ...int8) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceInt8(v ...int8) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt8
 		cc.TypeSliceInt8 = append(cc.TypeSliceInt8, v...)
 		return WithTypeSliceInt8(previous...)
@@ -270,8 +280,8 @@ func AppendTypeSliceInt8(v ...int8) AllConfigOption {
 }
 
 // WithTypeSliceUint8 option func for filed TypeSliceUint8
-func WithTypeSliceUint8(v ...uint8) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceUint8(v ...uint8) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint8
 		cc.TypeSliceUint8 = v
 		return WithTypeSliceUint8(previous...)
@@ -279,8 +289,8 @@ func WithTypeSliceUint8(v ...uint8) AllConfigOption {
 }
 
 // AppendTypeSliceUint8 append func for filed TypeSliceUint8
-func AppendTypeSliceUint8(v ...uint8) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceUint8(v ...uint8) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint8
 		cc.TypeSliceUint8 = append(cc.TypeSliceUint8, v...)
 		return WithTypeSliceUint8(previous...)
@@ -288,8 +298,8 @@ func AppendTypeSliceUint8(v ...uint8) AllConfigOption {
 }
 
 // WithTypeSliceInt16 option func for filed TypeSliceInt16
-func WithTypeSliceInt16(v ...int16) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceInt16(v ...int16) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt16
 		cc.TypeSliceInt16 = v
 		return WithTypeSliceInt16(previous...)
@@ -297,8 +307,8 @@ func WithTypeSliceInt16(v ...int16) AllConfigOption {
 }
 
 // AppendTypeSliceInt16 append func for filed TypeSliceInt16
-func AppendTypeSliceInt16(v ...int16) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceInt16(v ...int16) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt16
 		cc.TypeSliceInt16 = append(cc.TypeSliceInt16, v...)
 		return WithTypeSliceInt16(previous...)
@@ -306,8 +316,8 @@ func AppendTypeSliceInt16(v ...int16) AllConfigOption {
 }
 
 // WithTypeSliceUin16 option func for filed TypeSliceUin16
-func WithTypeSliceUin16(v ...uint16) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceUin16(v ...uint16) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUin16
 		cc.TypeSliceUin16 = v
 		return WithTypeSliceUin16(previous...)
@@ -315,8 +325,8 @@ func WithTypeSliceUin16(v ...uint16) AllConfigOption {
 }
 
 // AppendTypeSliceUin16 append func for filed TypeSliceUin16
-func AppendTypeSliceUin16(v ...uint16) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceUin16(v ...uint16) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUin16
 		cc.TypeSliceUin16 = append(cc.TypeSliceUin16, v...)
 		return WithTypeSliceUin16(previous...)
@@ -324,8 +334,8 @@ func AppendTypeSliceUin16(v ...uint16) AllConfigOption {
 }
 
 // WithTypeSliceInt32 option func for filed TypeSliceInt32
-func WithTypeSliceInt32(v ...int32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceInt32(v ...int32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt32
 		cc.TypeSliceInt32 = v
 		return WithTypeSliceInt32(previous...)
@@ -333,8 +343,8 @@ func WithTypeSliceInt32(v ...int32) AllConfigOption {
 }
 
 // AppendTypeSliceInt32 append func for filed TypeSliceInt32
-func AppendTypeSliceInt32(v ...int32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceInt32(v ...int32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt32
 		cc.TypeSliceInt32 = append(cc.TypeSliceInt32, v...)
 		return WithTypeSliceInt32(previous...)
@@ -342,8 +352,8 @@ func AppendTypeSliceInt32(v ...int32) AllConfigOption {
 }
 
 // WithTypeSliceUint32 option func for filed TypeSliceUint32
-func WithTypeSliceUint32(v ...uint32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceUint32(v ...uint32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint32
 		cc.TypeSliceUint32 = v
 		return WithTypeSliceUint32(previous...)
@@ -351,8 +361,8 @@ func WithTypeSliceUint32(v ...uint32) AllConfigOption {
 }
 
 // AppendTypeSliceUint32 append func for filed TypeSliceUint32
-func AppendTypeSliceUint32(v ...uint32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceUint32(v ...uint32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint32
 		cc.TypeSliceUint32 = append(cc.TypeSliceUint32, v...)
 		return WithTypeSliceUint32(previous...)
@@ -360,8 +370,8 @@ func AppendTypeSliceUint32(v ...uint32) AllConfigOption {
 }
 
 // WithTypeSliceInt64 option func for filed TypeSliceInt64
-func WithTypeSliceInt64(v ...int64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceInt64(v ...int64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt64
 		cc.TypeSliceInt64 = v
 		return WithTypeSliceInt64(previous...)
@@ -369,8 +379,8 @@ func WithTypeSliceInt64(v ...int64) AllConfigOption {
 }
 
 // AppendTypeSliceInt64 append func for filed TypeSliceInt64
-func AppendTypeSliceInt64(v ...int64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceInt64(v ...int64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceInt64
 		cc.TypeSliceInt64 = append(cc.TypeSliceInt64, v...)
 		return WithTypeSliceInt64(previous...)
@@ -378,8 +388,8 @@ func AppendTypeSliceInt64(v ...int64) AllConfigOption {
 }
 
 // WithTypeSliceUint64 option func for filed TypeSliceUint64
-func WithTypeSliceUint64(v ...uint64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceUint64(v ...uint64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint64
 		cc.TypeSliceUint64 = v
 		return WithTypeSliceUint64(previous...)
@@ -387,8 +397,8 @@ func WithTypeSliceUint64(v ...uint64) AllConfigOption {
 }
 
 // AppendTypeSliceUint64 append func for filed TypeSliceUint64
-func AppendTypeSliceUint64(v ...uint64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceUint64(v ...uint64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceUint64
 		cc.TypeSliceUint64 = append(cc.TypeSliceUint64, v...)
 		return WithTypeSliceUint64(previous...)
@@ -396,8 +406,8 @@ func AppendTypeSliceUint64(v ...uint64) AllConfigOption {
 }
 
 // WithTypeSliceString option func for filed TypeSliceString
-func WithTypeSliceString(v ...string) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceString(v ...string) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceString
 		cc.TypeSliceString = v
 		return WithTypeSliceString(previous...)
@@ -405,8 +415,8 @@ func WithTypeSliceString(v ...string) AllConfigOption {
 }
 
 // AppendTypeSliceString append func for filed TypeSliceString
-func AppendTypeSliceString(v ...string) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceString(v ...string) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceString
 		cc.TypeSliceString = append(cc.TypeSliceString, v...)
 		return WithTypeSliceString(previous...)
@@ -414,8 +424,8 @@ func AppendTypeSliceString(v ...string) AllConfigOption {
 }
 
 // WithTypeSliceFloat32 option func for filed TypeSliceFloat32
-func WithTypeSliceFloat32(v ...float32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceFloat32(v ...float32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceFloat32
 		cc.TypeSliceFloat32 = v
 		return WithTypeSliceFloat32(previous...)
@@ -423,8 +433,8 @@ func WithTypeSliceFloat32(v ...float32) AllConfigOption {
 }
 
 // AppendTypeSliceFloat32 append func for filed TypeSliceFloat32
-func AppendTypeSliceFloat32(v ...float32) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceFloat32(v ...float32) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceFloat32
 		cc.TypeSliceFloat32 = append(cc.TypeSliceFloat32, v...)
 		return WithTypeSliceFloat32(previous...)
@@ -432,8 +442,8 @@ func AppendTypeSliceFloat32(v ...float32) AllConfigOption {
 }
 
 // WithTypeSliceFloat64 option func for filed TypeSliceFloat64
-func WithTypeSliceFloat64(v ...float64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceFloat64(v ...float64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceFloat64
 		cc.TypeSliceFloat64 = v
 		return WithTypeSliceFloat64(previous...)
@@ -441,8 +451,8 @@ func WithTypeSliceFloat64(v ...float64) AllConfigOption {
 }
 
 // AppendTypeSliceFloat64 append func for filed TypeSliceFloat64
-func AppendTypeSliceFloat64(v ...float64) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceFloat64(v ...float64) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceFloat64
 		cc.TypeSliceFloat64 = append(cc.TypeSliceFloat64, v...)
 		return WithTypeSliceFloat64(previous...)
@@ -450,8 +460,8 @@ func AppendTypeSliceFloat64(v ...float64) AllConfigOption {
 }
 
 // WithTypeSliceDuratuon option func for filed TypeSliceDuratuon
-func WithTypeSliceDuratuon(v ...time.Duration) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeSliceDuratuon(v ...time.Duration) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceDuratuon
 		cc.TypeSliceDuratuon = v
 		return WithTypeSliceDuratuon(previous...)
@@ -459,8 +469,8 @@ func WithTypeSliceDuratuon(v ...time.Duration) AllConfigOption {
 }
 
 // AppendTypeSliceDuratuon append func for filed TypeSliceDuratuon
-func AppendTypeSliceDuratuon(v ...time.Duration) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func AppendTypeSliceDuratuon(v ...time.Duration) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeSliceDuratuon
 		cc.TypeSliceDuratuon = append(cc.TypeSliceDuratuon, v...)
 		return WithTypeSliceDuratuon(previous...)
@@ -468,8 +478,8 @@ func AppendTypeSliceDuratuon(v ...time.Duration) AllConfigOption {
 }
 
 // WithTypeMapStringIntNotLeaf option func for filed TypeMapStringIntNotLeaf
-func WithTypeMapStringIntNotLeaf(v map[string]int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeMapStringIntNotLeaf(v map[string]int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeMapStringIntNotLeaf
 		cc.TypeMapStringIntNotLeaf = v
 		return WithTypeMapStringIntNotLeaf(previous)
@@ -477,8 +487,8 @@ func WithTypeMapStringIntNotLeaf(v map[string]int) AllConfigOption {
 }
 
 // WithTypeMapStringInt option func for filed TypeMapStringInt
-func WithTypeMapStringInt(v map[string]int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeMapStringInt(v map[string]int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeMapStringInt
 		cc.TypeMapStringInt = v
 		return WithTypeMapStringInt(previous)
@@ -486,8 +496,8 @@ func WithTypeMapStringInt(v map[string]int) AllConfigOption {
 }
 
 // WithTypeMapIntString option func for filed TypeMapIntString
-func WithTypeMapIntString(v map[int]string) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeMapIntString(v map[int]string) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeMapIntString
 		cc.TypeMapIntString = v
 		return WithTypeMapIntString(previous)
@@ -495,8 +505,8 @@ func WithTypeMapIntString(v map[int]string) AllConfigOption {
 }
 
 // WithTypeMapStringString option func for filed TypeMapStringString
-func WithTypeMapStringString(v map[string]string) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeMapStringString(v map[string]string) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeMapStringString
 		cc.TypeMapStringString = v
 		return WithTypeMapStringString(previous)
@@ -504,8 +514,8 @@ func WithTypeMapStringString(v map[string]string) AllConfigOption {
 }
 
 // WithTypeMapIntInt option func for filed TypeMapIntInt
-func WithTypeMapIntInt(v map[int]int) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeMapIntInt(v map[int]int) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeMapIntInt
 		cc.TypeMapIntInt = v
 		return WithTypeMapIntInt(previous)
@@ -513,8 +523,8 @@ func WithTypeMapIntInt(v map[int]int) AllConfigOption {
 }
 
 // WithTypeMapStringDuration option func for filed TypeMapStringDuration
-func WithTypeMapStringDuration(v map[string]time.Duration) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTypeMapStringDuration(v map[string]time.Duration) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TypeMapStringDuration
 		cc.TypeMapStringDuration = v
 		return WithTypeMapStringDuration(previous)
@@ -522,8 +532,8 @@ func WithTypeMapStringDuration(v map[string]time.Duration) AllConfigOption {
 }
 
 // WithRedis option func for filed Redis
-func WithRedis(v *Redis) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithRedis(v *Redis) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.Redis
 		cc.Redis = v
 		return WithRedis(previous)
@@ -531,8 +541,8 @@ func WithRedis(v *Redis) AllConfigOption {
 }
 
 // WithETCD option func for filed ETCD
-func WithETCD(v *ETCD) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithETCD(v *ETCD) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.ETCD
 		cc.ETCD = v
 		return WithETCD(previous)
@@ -540,8 +550,8 @@ func WithETCD(v *ETCD) AllConfigOption {
 }
 
 // WithTestInterface option func for filed TestInterface
-func WithTestInterface(v interface{}) AllConfigOption {
-	return func(cc *AllConfig) AllConfigOption {
+func WithTestInterface(v interface{}) AllConfigOptionFunc {
+	return func(cc *AllConfig) AllConfigOptionFunc {
 		previous := cc.TestInterface
 		cc.TestInterface = v
 		return WithTestInterface(previous)
@@ -556,7 +566,7 @@ var watchDogAllConfig func(cc *AllConfig)
 
 // setAllConfigDefaultValue default AllConfig value
 func setAllConfigDefaultValue(cc *AllConfig) {
-	for _, opt := range [...]AllConfigOption{
+	for _, opt := range [...]AllConfigOptionFunc{
 		WithTypeBool(false),
 		WithTypeString("a"),
 		WithTypeDuration(time.Second),

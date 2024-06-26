@@ -2,8 +2,18 @@ package example
 
 import "testing"
 
+// interface test
+type interfaceTest struct {
+	data []int64
+}
+
+func (i *interfaceTest) Apply(cc *Config) ConfigOption {
+	return AppendTestSliceInt64(1, 2, 3, 4).Apply(cc)
+}
+
 func TestNewConfig(t *testing.T) {
-	tc := NewFuncNameSpecified(false, "", WithTestMapIntInt(map[int]int{2: 4}))
+	it := &interfaceTest{data: []int64{1, 2, 3, 4}}
+	tc := NewFuncNameSpecified(false, "", WithTestMapIntInt(map[int]int{2: 4}), it)
 	if tc == nil {
 		t.Fatal("new config error")
 	}
