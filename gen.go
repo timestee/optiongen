@@ -2,6 +2,7 @@ package optiongen
 
 import (
 	"bytes"
+	_ "embed"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -18,6 +19,9 @@ import (
 	"github.com/sandwich-go/boost/xtag"
 )
 
+//go:embed template.tmpl
+var templateTextWithPreviousSupport string
+
 type FieldType int
 
 const (
@@ -30,6 +34,11 @@ const (
 	defaultAppendPrefix = "Append"
 )
 
+type TypeParam struct {
+	Name string
+	Type string
+}
+
 type fileOptionGen struct {
 	FilePath    string
 	NameDeclare string
@@ -37,8 +46,9 @@ type fileOptionGen struct {
 	PkgName     string
 	ImportPath  []string
 
-	Comments  []string
-	ClassName string
+	Comments   []string
+	ClassName  string
+	TypeParams []TypeParam
 
 	ClassOptionFields []optionField
 	Annotations       []annotation.Annotation
@@ -94,6 +104,9 @@ type templateData struct {
 	ClassNewFuncName            string
 	XConf                       bool
 	OptionReturnPrevious        bool
+	TypeParamsDec               string
+	TypeParams                  string
+	TypeParamsBase              string
 
 	VisitorName   string
 	InterfaceName string
@@ -160,6 +173,22 @@ func (g fileOptionGen) gen() {
 	}
 
 	tmp := templateData{XConf: AtomicConfig().GetXConf(), OptionReturnPrevious: AtomicConfig().GetOptionReturnPrevious()}
+
+	if len(g.TypeParams) > 0 {
+		if tmp.XConf {
+			g.fatal("", fmt.Errorf("type params not supported with xconf"))
+		}
+
+		tmp.TypeParamsDec = fmt.Sprintf("[%s]", strings.Join(sliceMap(g.TypeParams, func(tp TypeParam) string {
+			return fmt.Sprintf("%s %s", tp.Name, tp.Type)
+		}), ", "))
+		tmp.TypeParams = fmt.Sprintf("[%s]", strings.Join(sliceMap(g.TypeParams, func(tp TypeParam) string {
+			return tp.Name
+		}), ", "))
+		tmp.TypeParamsBase = fmt.Sprintf("[%s]", strings.Join(sliceMap(g.TypeParams, func(tp TypeParam) string {
+			return tp.Type
+		}), ", "))
+	}
 
 	className := g.ClassName
 	indexGot := make(map[int]string)
@@ -339,9 +368,9 @@ func (g fileOptionGen) gen() {
 		pameters = append(pameters, fmt.Sprintf("%s %s", v.NameAsParameter, v.Type))
 	}
 	if len(pameters) == 0 {
-		tmp.ClassNewFuncSignature = fmt.Sprintf("func %s(opts... %s) %s", newFuncName, optionTypeName, newFuncReturn)
+		tmp.ClassNewFuncSignature = fmt.Sprintf("func %s%s(opts... %s%s) %s%s", newFuncName, tmp.TypeParamsDec, optionTypeName, tmp.TypeParams, newFuncReturn, tmp.TypeParams)
 	} else {
-		tmp.ClassNewFuncSignature = fmt.Sprintf("func %s(%s, opts... %s) %s", newFuncName, strings.Join(pameters, ","), optionTypeName, newFuncReturn)
+		tmp.ClassNewFuncSignature = fmt.Sprintf("func %s%s(%s, opts... %s%s) %s%s", newFuncName, tmp.TypeParamsDec, strings.Join(pameters, ","), optionTypeName, tmp.TypeParams, newFuncReturn, tmp.TypeParams)
 	}
 
 	tmp.ClassNewFuncName = newFuncName
@@ -411,4 +440,12 @@ func funcComment(name, funcType, funcName, deprecated string, methodComments []s
 		comment += "\n// Deprecated: " + deprecated
 	}
 	return comment
+}
+
+func sliceMap[F any, T any](s []F, cb func(f F) T) []T {
+	var result []T
+	for _, v := range s {
+		result = append(result, cb(v))
+	}
+	return result
 }

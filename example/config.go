@@ -2,6 +2,7 @@ package example
 
 import (
 	"log"
+	"sort"
 	"time"
 )
 
@@ -208,5 +209,19 @@ func XXXXXXOptionDeclareWithDefault() interface{} {
 		"OnWatchError":       WatchError(nil),      // 辅助指定类型为WatchError
 		"OnWatchErrorNotNil": func(loaderName string, confPath string, watchErr error) {},
 		"TypeSliceDuratuon":  []time.Duration([]time.Duration{time.Second, time.Minute, time.Hour}), // 辅助指定类型为WatchError
+	}
+}
+
+//go:generate optiongen --option_with_struct_name=false --usage_tag_name=usage --new_func_return=interface
+func GenericConfigOptionDeclareWithDefault[T sort.Interface]() interface{} {
+	return map[string]interface{}{
+		"Callback": (func(t T))(nil),
+	}
+}
+
+//go:generate optiongen --option_with_struct_name=false --usage_tag_name=usage --new_func_return=interface --option_return_previous=false
+func GenericConfig2OptionDeclareWithDefault[T sort.Interface]() interface{} {
+	return map[string]interface{}{
+		"Callback2": (func(t T))(nil),
 	}
 }
