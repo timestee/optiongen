@@ -124,6 +124,7 @@ func ParseDir(dir string) {
 	comments := file.Comments
 	var classComments []string
 	var classOptionFields []optionField
+	var typeParams []TypeParam
 
 	var lastMaxBodyPos token.Pos
 	for _, d := range file.Decls {
@@ -184,6 +185,20 @@ func ParseDir(dir string) {
 					break
 				}
 			}
+
+			if d.Type != nil && d.Type.TypeParams != nil {
+				typeParams = make([]TypeParam, len(d.Type.TypeParams.List))
+				for i, f := range d.Type.TypeParams.List {
+					if len(f.Names) == 0 {
+						paniwWith("optionGen %s type param %d has no name", declareName, i)
+					}
+					typeParams[i] = TypeParam{
+						Name: gofmt(f.Names[0]),
+						Type: gofmt(f.Type),
+					}
+				}
+			}
+
 			result := stmt.Results[0].(*ast.CompositeLit)
 			optionFields := make([]optionField, len(result.Elts))
 			for i, elt := range result.Elts {
@@ -355,6 +370,7 @@ func ParseDir(dir string) {
 		ClassName:         DstName,
 		ClassOptionFields: classOptionFields,
 		Comments:          classComments,
+		TypeParams:        typeParams,
 	}
 	err = g.ParseAnnotations()
 	if err != nil {

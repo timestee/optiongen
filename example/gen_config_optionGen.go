@@ -16,35 +16,35 @@ import (
 // Config should use NewFuncNameSpecified to initialize it
 type Config struct {
 	TestMapIntInt map[int]int `xconf:"test_map_int_int"`
-	SpecSub       *spec       `xconf:"spec_sub"` // annotation@SpecSub(getter="SpecVisitor")
+	// annotation@Paths(inline="true")
+	Paths             `xconf:"paths"`
+	TestInt64         int64          `xconf:"test_int64"`
+	TestSliceInt      []int          `xconf:"test_slice_int"`
+	TestSliceInt64    []int64        `xconf:"test_slice_int64"`
+	TestSliceString   []string       `xconf:"test_slice_string"`
+	TestSliceBool     []bool         `xconf:"test_slice_bool"`
+	TestSliceIntNil   []int          `xconf:"test_slice_int_nil"`
+	TestSliceByte     []byte         `xconf:"test_slice_byte"`
+	TestSliceIntEmpty []int          `xconf:"test_slice_int_empty"`
+	TestHTTPPort      string         `xconf:"test_http_port"`
+	TestMapStringInt  map[string]int `xconf:"test_map_string_int"`
+	TestInt           int            `xconf:"test_int" usage:"这里是函数注释1,\"test\" , 这里是函数注释2"`
 	// test comment 1
 	// annotation@TestNil(option="WithTTTTTTTT")
 	TestNil             interface{}       `xconf:"test_nil"` // test comment 3
-	TestSliceInt        []int             `xconf:"test_slice_int"`
-	TestSliceInt64      []int64           `xconf:"test_slice_int64"`
-	TestSliceString     []string          `xconf:"test_slice_string"`
-	TestSliceBool       []bool            `xconf:"test_slice_bool"`
-	TestSliceIntNil     []int             `xconf:"test_slice_int_nil"`
-	TestSliceByte       []byte            `xconf:"test_slice_byte"`
-	TestSliceIntEmpty   []int             `xconf:"test_slice_int_empty"`
-	TestHTTPPort        string            `xconf:"test_http_port"`
 	TestEmptyMap        map[int]int       `xconf:"test_empty_map"`
-	TestInt64           int64             `xconf:"test_int64"`
-	TestInt             int               `xconf:"test_int" usage:"这里是函数注释1,\"test\" , 这里是函数注释2"`
-	TestMapIntString    map[int]string    `xconf:"test_map_int_string"`
 	TestMapStringString map[string]string `xconf:"test_map_string_string"`
 	TestString          string            `xconf:"test_string"`
 	Food                *string           `xconf:"food"`
 	Walk                func()            `xconf:"walk"`
 	TestNilFunc         func()            `xconf:"test_nil_func"` // 中文1
+	SpecSub             *spec             `xconf:"spec_sub"`      // annotation@SpecSub(getter="SpecVisitor")
 	SubTest             *SubTest          `xconf:"sub_test"`
-	TestMapStringInt    map[string]int    `xconf:"test_map_string_int"`
 	// annotation@TestProtected(private="true")
 	TestProtected []byte `xconf:"test_protected"`
 	// annotation@fOO(inline="true")
-	*FOO `xconf:"f_oo"`
-	// annotation@Paths(inline="true")
-	Paths `xconf:"paths"`
+	*FOO             `xconf:"f_oo"`
+	TestMapIntString map[int]string `xconf:"test_map_int_string"`
 	// annotation@TestParamterBool(arg=1)
 	TestParamterBool bool `xconf:"test_paramter_bool"` // reserved parameter 1
 	// annotation@TestParamterStr(arg=22)
@@ -99,21 +99,21 @@ func WithTestMapIntInt(v map[int]int) ConfigOptionFunc {
 	}
 }
 
-// WithSpecSub option func for filed SpecSub
-func WithSpecSub(v *spec) ConfigOptionFunc {
+// WithPaths option func for filed Paths
+func WithPaths(v Paths) ConfigOptionFunc {
 	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.SpecSub
-		cc.SpecSub = v
-		return WithSpecSub(previous)
+		previous := cc.Paths
+		cc.Paths = v
+		return WithPaths(previous)
 	}
 }
 
-// WithTTTTTTTT option func for filed TestNil
-func WithTTTTTTTT(v interface{}) ConfigOptionFunc {
+// WithTestInt64 option func for filed TestInt64
+func WithTestInt64(v int64) ConfigOptionFunc {
 	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.TestNil
-		cc.TestNil = v
-		return WithTTTTTTTT(previous)
+		previous := cc.TestInt64
+		cc.TestInt64 = v
+		return WithTestInt64(previous)
 	}
 }
 
@@ -243,21 +243,12 @@ func WithTestHTTPPort(v string) ConfigOptionFunc {
 	}
 }
 
-// WithTestEmptyMap option func for filed TestEmptyMap
-func WithTestEmptyMap(v map[int]int) ConfigOptionFunc {
+// WithTestMapStringInt option func for filed TestMapStringInt
+func WithTestMapStringInt(v map[string]int) ConfigOptionFunc {
 	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.TestEmptyMap
-		cc.TestEmptyMap = v
-		return WithTestEmptyMap(previous)
-	}
-}
-
-// WithTestInt64 option func for filed TestInt64
-func WithTestInt64(v int64) ConfigOptionFunc {
-	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.TestInt64
-		cc.TestInt64 = v
-		return WithTestInt64(previous)
+		previous := cc.TestMapStringInt
+		cc.TestMapStringInt = v
+		return WithTestMapStringInt(previous)
 	}
 }
 
@@ -270,12 +261,21 @@ func WithTestInt(v int) ConfigOptionFunc {
 	}
 }
 
-// WithTestMapIntString option func for filed TestMapIntString
-func WithTestMapIntString(v map[int]string) ConfigOptionFunc {
+// WithTTTTTTTT option func for filed TestNil
+func WithTTTTTTTT(v interface{}) ConfigOptionFunc {
 	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.TestMapIntString
-		cc.TestMapIntString = v
-		return WithTestMapIntString(previous)
+		previous := cc.TestNil
+		cc.TestNil = v
+		return WithTTTTTTTT(previous)
+	}
+}
+
+// WithTestEmptyMap option func for filed TestEmptyMap
+func WithTestEmptyMap(v map[int]int) ConfigOptionFunc {
+	return func(cc *Config) ConfigOptionFunc {
+		previous := cc.TestEmptyMap
+		cc.TestEmptyMap = v
+		return WithTestEmptyMap(previous)
 	}
 }
 
@@ -324,21 +324,21 @@ func WithTestNilFunc(v func()) ConfigOptionFunc {
 	}
 }
 
+// WithSpecSub option func for filed SpecSub
+func WithSpecSub(v *spec) ConfigOptionFunc {
+	return func(cc *Config) ConfigOptionFunc {
+		previous := cc.SpecSub
+		cc.SpecSub = v
+		return WithSpecSub(previous)
+	}
+}
+
 // WithSubTest option func for filed SubTest
 func WithSubTest(v *SubTest) ConfigOptionFunc {
 	return func(cc *Config) ConfigOptionFunc {
 		previous := cc.SubTest
 		cc.SubTest = v
 		return WithSubTest(previous)
-	}
-}
-
-// WithTestMapStringInt option func for filed TestMapStringInt
-func WithTestMapStringInt(v map[string]int) ConfigOptionFunc {
-	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.TestMapStringInt
-		cc.TestMapStringInt = v
-		return WithTestMapStringInt(previous)
 	}
 }
 
@@ -351,12 +351,12 @@ func WithFOO(v *FOO) ConfigOptionFunc {
 	}
 }
 
-// WithPaths option func for filed Paths
-func WithPaths(v Paths) ConfigOptionFunc {
+// WithTestMapIntString option func for filed TestMapIntString
+func WithTestMapIntString(v map[int]string) ConfigOptionFunc {
 	return func(cc *Config) ConfigOptionFunc {
-		previous := cc.Paths
-		cc.Paths = v
-		return WithPaths(previous)
+		previous := cc.TestMapIntString
+		cc.TestMapIntString = v
+		return WithTestMapIntString(previous)
 	}
 }
 
@@ -373,8 +373,8 @@ func setConfigDefaultValue(cc *Config) {
 	cc.TestParamterStr = ""
 	for _, opt := range [...]ConfigOptionFunc{
 		WithTestMapIntInt(map[int]int{1: 1, 2: 2, 3: 3}),
-		WithSpecSub(NewSpec()),
-		WithTTTTTTTT(nil),
+		WithPaths(Paths{}),
+		WithTestInt64(32),
 		WithTestSliceInt([]int{1, 2, 3}...),
 		WithTestSliceInt64([]int64{1, 2, 3}...),
 		WithTestSliceString([]string{"test1", "test2"}...),
@@ -383,10 +383,10 @@ func setConfigDefaultValue(cc *Config) {
 		WithTestSliceByte(nil),
 		WithTestSliceIntEmpty(make([]int, 0)...),
 		WithTestHTTPPort(""),
-		WithTestEmptyMap(make(map[int]int, 0)),
-		WithTestInt64(32),
+		WithTestMapStringInt(map[string]int{"test": 1}),
 		WithTestInt(32),
-		WithTestMapIntString(map[int]string{1: "test"}),
+		WithTTTTTTTT(nil),
+		WithTestEmptyMap(make(map[int]int, 0)),
 		WithTestMapStringString(map[string]string{"test": "test"}),
 		WithTestString("Meow"),
 		WithFood(nil),
@@ -394,10 +394,10 @@ func setConfigDefaultValue(cc *Config) {
 			log.Println("Walking")
 		}),
 		WithTestNilFunc(nil),
+		WithSpecSub(NewSpec()),
 		WithSubTest(&SubTest{}),
-		WithTestMapStringInt(map[string]int{"test": 1}),
 		WithFOO(nil),
-		WithPaths(Paths{}),
+		WithTestMapIntString(map[int]string{1: "test"}),
 	} {
 		opt(cc)
 	}
@@ -451,8 +451,8 @@ func AtomicConfig() ConfigVisitor {
 
 // all getter func
 func (cc *Config) GetTestMapIntInt() map[int]int             { return cc.TestMapIntInt }
-func (cc *Config) GetSpecSub() SpecVisitor                   { return cc.SpecSub }
-func (cc *Config) GetTestNil() interface{}                   { return cc.TestNil }
+func (cc *Config) GetPaths() Paths                           { return cc.Paths }
+func (cc *Config) GetTestInt64() int64                       { return cc.TestInt64 }
 func (cc *Config) GetTestSliceInt() []int                    { return cc.TestSliceInt }
 func (cc *Config) GetTestSliceInt64() []int64                { return cc.TestSliceInt64 }
 func (cc *Config) GetTestSliceString() []string              { return cc.TestSliceString }
@@ -461,28 +461,28 @@ func (cc *Config) GetTestSliceIntNil() []int                 { return cc.TestSli
 func (cc *Config) GetTestSliceByte() []byte                  { return cc.TestSliceByte }
 func (cc *Config) GetTestSliceIntEmpty() []int               { return cc.TestSliceIntEmpty }
 func (cc *Config) GetTestHTTPPort() string                   { return cc.TestHTTPPort }
-func (cc *Config) GetTestEmptyMap() map[int]int              { return cc.TestEmptyMap }
-func (cc *Config) GetTestInt64() int64                       { return cc.TestInt64 }
+func (cc *Config) GetTestMapStringInt() map[string]int       { return cc.TestMapStringInt }
 func (cc *Config) GetTestInt() int                           { return cc.TestInt }
-func (cc *Config) GetTestMapIntString() map[int]string       { return cc.TestMapIntString }
+func (cc *Config) GetTestNil() interface{}                   { return cc.TestNil }
+func (cc *Config) GetTestEmptyMap() map[int]int              { return cc.TestEmptyMap }
 func (cc *Config) GetTestMapStringString() map[string]string { return cc.TestMapStringString }
 func (cc *Config) GetTestString() string                     { return cc.TestString }
 func (cc *Config) GetFood() *string                          { return cc.Food }
 func (cc *Config) GetWalk() func()                           { return cc.Walk }
 func (cc *Config) GetTestNilFunc() func()                    { return cc.TestNilFunc }
+func (cc *Config) GetSpecSub() SpecVisitor                   { return cc.SpecSub }
 func (cc *Config) GetSubTest() *SubTest                      { return cc.SubTest }
-func (cc *Config) GetTestMapStringInt() map[string]int       { return cc.TestMapStringInt }
 func (cc *Config) GetTestProtected() []byte                  { return cc.TestProtected }
 func (cc *Config) GetFOO() *FOO                              { return cc.FOO }
-func (cc *Config) GetPaths() Paths                           { return cc.Paths }
+func (cc *Config) GetTestMapIntString() map[int]string       { return cc.TestMapIntString }
 func (cc *Config) GetTestParamterBool() bool                 { return cc.TestParamterBool }
 func (cc *Config) GetTestParamterStr() string                { return cc.TestParamterStr }
 
 // ConfigVisitor visitor interface for Config
 type ConfigVisitor interface {
 	GetTestMapIntInt() map[int]int
-	GetSpecSub() SpecVisitor
-	GetTestNil() interface{}
+	GetPaths() Paths
+	GetTestInt64() int64
 	GetTestSliceInt() []int
 	GetTestSliceInt64() []int64
 	GetTestSliceString() []string
@@ -491,20 +491,20 @@ type ConfigVisitor interface {
 	GetTestSliceByte() []byte
 	GetTestSliceIntEmpty() []int
 	GetTestHTTPPort() string
-	GetTestEmptyMap() map[int]int
-	GetTestInt64() int64
+	GetTestMapStringInt() map[string]int
 	GetTestInt() int
-	GetTestMapIntString() map[int]string
+	GetTestNil() interface{}
+	GetTestEmptyMap() map[int]int
 	GetTestMapStringString() map[string]string
 	GetTestString() string
 	GetFood() *string
 	GetWalk() func()
 	GetTestNilFunc() func()
+	GetSpecSub() SpecVisitor
 	GetSubTest() *SubTest
-	GetTestMapStringInt() map[string]int
 	GetTestProtected() []byte
 	GetFOO() *FOO
-	GetPaths() Paths
+	GetTestMapIntString() map[int]string
 	GetTestParamterBool() bool
 	GetTestParamterStr() string
 }
